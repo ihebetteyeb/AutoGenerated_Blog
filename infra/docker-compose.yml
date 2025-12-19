@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: blog-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: autoblog
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    command: sh -c "npx sequelize-cli db:migrate && npm run dev"
+    container_name: blog-backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: development
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: autoblog
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DIALECT: postgres
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: blog-frontend
+    ports:
+      - "5173:80" # 80 inside container → Vite build served by NGINX
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: "http://localhost:4000"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+
+volumes:
+  db-data:

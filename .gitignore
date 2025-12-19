@@ -1,0 +1,29 @@
+# Node dependencies (all node projects)
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Vite
+.vite/
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
